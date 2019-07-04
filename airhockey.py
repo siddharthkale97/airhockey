@@ -1,129 +1,135 @@
-import pygame,sys,pickle
+import pygame, sys, pickle
 import random
 from pygame.locals import *
 from sys import exit
 
 pygame.init()
 
-size=[500,700]
-screen=pygame.display.set_mode(size)
+size = [500, 700]
+screen = pygame.display.set_mode(size)
 
-#Initialising the screen and fonts
-screen1=pygame.display.set_mode(size)
+# Initialising the screen and fonts
+screen1 = pygame.display.set_mode(size)
 pygame.display.set_caption("Air Hockey")
-font1=pygame.font.SysFont("calibri",25)
-font2=pygame.font.SysFont("calibri",40)
-font3=pygame.font.SysFont("calibri",30)
-font4=pygame.font.SysFont("calibri",50)
+font1 = pygame.font.SysFont("calibri",25)
+font2 = pygame.font.SysFont("calibri",40)
+font3 = pygame.font.SysFont("calibri",30)
+font4 = pygame.font.SysFont("calibri",50)
 
-#Defining colors
-black=(0,0,0)
-white=(255,255,255)
-green=(0,255,0)
-red =(255,0,0)
-blue=(0,0,255)
-yellow=(255,255,0)
-aqua=(0,255,255)
-silver=(192,192,192)
-dgreen=(0,65,0)
-fushia=(128,0,128)
+# Defining colors
+black = (0,0,0)
+white = (255,255,255)
+green = (0,255,0)
+red = (255,0,0)
+blue = (0,0,255)
+yellow = (255,255,0)
+aqua = (0,255,255)
+silver = (192,192,192)
+dgreen = (0,65,0)
+fushia = (128,0,128)
 
 
-#File to store scores
+# File to store scores
 def create_score(c,p):
-    scorefile=open('Scores.dat','ab')
+    scorefile = open('Scores.dat', 'ab')
     pickle.dump([c,p],scorefile)
     scorefile.close()
-    scorefile=open('Scores.dat','rb+')
-    print "\nCOMPUTER","\t"*3,"PLAYER"
+    scorefile = open('Scores.dat', 'rb+')
+    print("\nCOMPUTER", "\t"*3, "PLAYER")
     while True:
         try:        
-            score=pickle.load(scorefile)
-            print score[0],"\t"*4,score[1]
+            score = pickle.load(scorefile)
+            print(score[0], "\t"*4, score[1])
         except EOFError:            
             scorefile.close()
             break
 
-#Home screen
+
+# Home screen
 def intro():
-    pygame.draw.rect(screen1,white,(25,25,450,650),0)
+    pygame.draw.rect(screen1, white, (25, 25, 450, 650), 0)
     screen1.fill(fushia)
-    pygame.draw.rect(screen1, green,(175,500,150,50),0)
+    pygame.draw.rect(screen1, green, (175, 500, 150, 50), 0)
 
 
-#Designing the layout    
+# Designing the layout
 def table():
-    pygame.draw.rect(screen, black,(25,25,450,650),0)
-    pygame.draw.circle(screen, yellow, [250,350],50,5)
-    pygame.draw.circle(screen, yellow, [250,350],10)
-    pygame.draw.line(screen, yellow, [25,350],[475,350],5)
-    pygame.draw.rect(screen, black,(25,25,450,650),5)
-    pygame.draw.rect(screen,silver ,(200,10,100,20),0)
-    pygame.draw.rect(screen,silver ,(200,670,100,20),0)
+    pygame.draw.rect(screen, black, (25, 25, 450, 650), 0)
+    pygame.draw.circle(screen, yellow, [250, 350], 50, 5)
+    pygame.draw.circle(screen, yellow, [250, 350], 10)
+    pygame.draw.line(screen, yellow, [25, 350], [475, 350], 5)
+    pygame.draw.rect(screen, black, (25, 25, 450, 650), 5)
+    pygame.draw.rect(screen, silver, (200, 10, 100, 20), 0)
+    pygame.draw.rect(screen, silver, (200, 670, 100, 20), 0)
 
-#Updating home screen
+
+# Updating home screen
 def homescreen(c,p):
     if c >=5:
-        cpuwin=font4.render("YOU LOSE",True,white)
-        screen.blit(cpuwin,(150,250))
+        cpuwin = font4.render("YOU LOSE", True, white)
+        screen.blit(cpuwin, (150, 250))
         pygame.display.flip()
-        create_score(c,p)
-    if p >=5:
-        cpuwin=font4.render("YOU WIN",True,white)
-        screen.blit(cpuwin,(150,250))
+        create_score(c, p)
+    if p >= 5:
+        cpuwin = font4.render("YOU WIN", True, white)
+        screen.blit(cpuwin, (150, 250))
         pygame.display.flip()
-        create_score(c,p)
+        create_score(c, p)
+
     playerScore=0
     cpuScore=0
             
-    begin=False
-    while begin==False:
+    begin = False
+    while begin is False:
         for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                pygame.quit ()
+            if event.type == pygame.QUIT:
+                pygame.quit()
                 sys.exit()
             intro()
-            msg=font2.render("WELCOME TO AIR HOCKEY!!!",True,aqua)
+            msg = font2.render("WELCOME TO AIR HOCKEY!!!", True, aqua)
             rules=list()
-            rules =['RULES:','1. Use the mouse to control the lower',
-               'mallet to score.',
-           '2. Press r to restart the game.','3. Press space to pause/play.',
-           'Score 5 goals to win the game']
-            n=len(rules)
-            x=0
+            rules = ['RULES:', '1. Use the mouse to control the lower',
+                     'mallet to score.',
+                     '2. Press r to restart the game.',
+                     '3. Press space to pause/play.',
+                     'Score 5 goals to win the game']
+            n = len(rules)
+            x = 0
             for i in range(n):
-                printmsg=font3.render(rules [i],True,aqua)
-                screen1.blit(printmsg,(25,150+x))
-                x+=50                  
-            bmsg=font2.render("PLAY!",True,red)
-            screen1.blit(bmsg,(210,510))
-            screen1.blit(msg,(25,50))
-            loc=pygame.mouse.get_pos()
-            if loc[0]>150 and loc[0]<300 and loc[1]>500 and loc[1]<550:
-                pygame.draw.rect(screen1, dgreen,(175,500,150,50),0)
-                screen1.blit(bmsg,(210,510))
-                click=pygame.mouse.get_pressed()
-                if click[0]==1:
-                    begin=True
+                printmsg = font3.render(rules[i], True, aqua)
+                screen1.blit(printmsg, (25, 150+x))
+                x += 50
+            bmsg = font2.render("PLAY!", True, red)
+            screen1.blit(bmsg, (210, 510))
+            screen1.blit(msg, (25, 50))
+            loc = pygame.mouse.get_pos()
+            if (loc[0] > 150 and loc[0] <300) and (loc[1] > 500 and loc[1] < 550):
+                pygame.draw.rect(screen1, dgreen, (175, 500, 150, 50), 0)
+                screen1.blit(bmsg, (210, 510))
+                click = pygame.mouse.get_pressed()
+                if click[0] == 1:
+                    begin = True
                     break
             pygame.display.update()
             clock.tick(30)
 
 
-cpuScore=0
-playerScore=0
-pStart_x=250
-pStart_y=350
+cpuScore = 0
+playerScore = 0
+pStart_x = 250
+pStart_y = 350
 
-#Creating the puck
+
+# Creating the puck
 class Puck(object):
-    def __init__(self,x,y,dx=0,dy=0):
-        self.x=x
-        self.y=y
-        self.dx=dx
-        self.dy=dy
-        self.pStart_x=self.x
-        self.pStart_y=self.y
+    def __init__(self, x, y, dx=0, dy=0):
+        self.x = x
+        self.y = y
+        self.dx = dx
+        self.dy = dy
+        self.pStart_x = self.x
+        self.pStart_y = self.y
+
     def update_Puck(self):
         if self.x<=40:
             self.x=42
@@ -139,6 +145,7 @@ class Puck(object):
             self.dy*=-1
         self.x+=self.dx
         self.y+=self.dy
+
     def fric_Puck(self):
         if self.dx>1:
             self.dx-=1
@@ -148,8 +155,10 @@ class Puck(object):
             self.dy-=1
         elif self.dy<-1:
             self.dy+=1
+
     def draw_Puck(self):
         pygame.draw.circle(screen,red, [self.x,self.y],15,0)
+
     def limitPuckSpeed(self):
         if self.dx>10:
             self.dx=10
@@ -159,16 +168,18 @@ class Puck(object):
             self.dy=10
         if self.dy<-10:
             self.dy=10
+
     def reset(self):
         self.x=self.pStart_x
         self.y=self.pStart_y
         self.dx=0
         self.dy=0
+
+
 puck1 = Puck(pStart_x,pStart_y)
 
 
-
-#Creating the mallet
+# Creating the mallet
 class Mallet(object):
     def __init__(self,malletType,x,y,uLim=50,bLim=650,lLim=50,rLim=450,dx=0,dy=0):
         self.x=x
@@ -210,9 +221,10 @@ class Mallet(object):
     def reset_Mallet(self):
         self.x = self.malletStart_x
         self.y = self.malletStart_y
-    
-upperMallet=Mallet("AI",250,100,50,330)
-lowerMallet=Mallet("MP",250,600,370,650)
+
+
+upperMallet = Mallet("AI",250,100,50,330)
+lowerMallet = Mallet("MP",250,600,370,650)
 
 def malletAI(upperMallet):
     if puck1.x < upperMallet.x:
@@ -242,7 +254,9 @@ def malletAI(upperMallet):
                 upperMallet.dy=0
         if abs(puck1.y-upperMallet.y)<20 and abs(puck1.x-upperMallet.x)<20:
             puck1.dy +=2
-#Goal
+
+
+# Goal
 class Goal(object):
     def __init__(self,x,y,w=100,h=20):
         self.x=x
@@ -252,22 +266,24 @@ class Goal(object):
         
         self.centre_x=self.x+self.w/2
         self.centre_y=self.y+self.w/2
-       
-upperGoal=Goal(200,10)
-lowerGoal=Goal(200,670)
 
-ticksToFriction=60
-ticksToAI=10
-c=p=0
-cpuScore=0
-playerScore=0
 
-pause=False
-clock=pygame.time.Clock()
-homescreen(c,p)
+upperGoal = Goal(200,10)
+lowerGoal = Goal(200,670)
 
-#Pausing
-while pause==False:
+ticksToFriction = 60
+ticksToAI = 10
+c = p = 0
+cpuScore = 0
+playerScore = 0
+
+pause = False
+clock = pygame.time.Clock()
+homescreen(c, p)
+
+
+# Pausing
+while pause is False:
   
     for event in pygame.event.get(): 
         if event.type==pygame.QUIT:
@@ -275,7 +291,7 @@ while pause==False:
             sys.exit()
         if event.type==pygame.KEYDOWN:
             if event.key == pygame.K_r:
-                print "Game reset..."
+                print("Game reset...")
                 cpuScore=0
                 playerScore=0
                 puck1.reset()
@@ -312,28 +328,28 @@ while pause==False:
 
     #Scoring a goal           
     if (abs(lowerGoal.centre_y-puck1.y)<=50 and abs(lowerGoal.centre_x-puck1.x)<=50):
-        print "Computer Scores!"
+        print("Computer Scores!")
         cpuScore+=1
-        print "User:", playerScore,"Computer:",cpuScore
+        print("User:", playerScore,"Computer:",cpuScore)
         
         if cpuScore==5:
             c=cpuScore
             p=playerScore
             playerScore=0
             cpuScore=0
-            print "\nComputer Wins!"
+            print("\nComputer Wins!")
                         
             homescreen(c,p)
         puck1.reset()
         upperMallet.reset_Mallet()
                 
     if (abs(upperGoal.centre_y-puck1.y)<=5 and abs(upperGoal.centre_x-puck1.x)<=40):
-        print "User Scores!"
+        print("User Scores!")
         playerScore += 1
-        print "User:", playerScore,"Computer:", cpuScore
+        print("User:", playerScore,"Computer:", cpuScore)
               
         if playerScore==5:           
-            print "\nYou Win!"
+            print("\nYou Win!")
             c=cpuScore
             p=playerScore
             playerScore=0
